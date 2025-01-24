@@ -27,7 +27,7 @@ font_add_google(name = "Inconsolata",family = "Inconsolata")
 
 
 #READ IN DEMOLITION DATA####
-demolition_data <- read.csv("02_Data/MoCo_Demolition/Demolition_Permits_20240703.csv")
+demolition_data <- read.csv("MoCo_Demolition/Demolition_Permits_20240703.csv")
 
 
 
@@ -55,14 +55,31 @@ demolition_data <- demolition_data |> mutate(Coordinates = str_extract(Location,
 
 
 
-####REMOVING NA VALUES####
-#PROVIDES A COUNT OF NA VALUES BY COLUMN
-sum(x = is.na(demolition_data$Final_Date))
+
+
+
 
 
 
 #REMOVES ALL NA VALUES. HAS NO NA VALUES IN THE DATASET AFTER RUNNING THIS LINE OF CODE####
 demo_data_clean <- drop_na(data = demolition_data)
+
+
+
+
+
+
+
+
+
+
+#PROVIDES A COUNT OF NA VALUES BY COLUMN####
+sum(is.na(demo_data_clean))
+
+
+
+
+
 
 
 
@@ -77,7 +94,8 @@ test_3 <- demolition_data[!is.na(demolition_data$Final_Date),]
 
 
 #FILTER TO SINGLE FAMILY HOMES ONLY AND GET COUNT OF DEMOS####
-demo_data_clean |> filter(Use_Code == "SINGLE FAMILY DWELLING" & Status %in% c("Finaled","Completed")) |> summarise(n())
+demo_data_clean |> filter(Use_Code == "SINGLE FAMILY DWELLING" & Status %in% c("Finaled","Completed")) |> 
+  summarise(n())
 
 
 
@@ -89,9 +107,9 @@ demo_data_clean |> filter(Use_Code == "SINGLE FAMILY DWELLING" & Status %in% c("
 #CREATE NEW DATASET WITH SINGLE FAMILY HOMES ONLY BY CITY WITH COLUMN SHOWING PERCENT BY CITY LOCATION####
 demos_by_location <- demo_data_clean |> 
   filter(Use_Code == "SINGLE FAMILY DWELLING" & Status %in% c("Finaled","Completed")) |>  
-  group_by(City) |>  summarise(total_by_city = n()) |> 
-  arrange(desc(total_by_city)) |> 
-  mutate(pct = round(total_by_city/sum(total_by_city)*100,2))
+  group_by(City) |>  summarise(total_by_city = n()) |> #creates new column with total by city
+  arrange(desc(total_by_city)) |> # orders in descending order
+  mutate(pct = round(total_by_city/sum(total_by_city)*100,2)) #creates new column with percent of demos in each city
 
 
 
@@ -198,7 +216,8 @@ annotate(geom = "text",x = 7,y = 2200,label = "59% of Demolition & Move Permits"
   #ADD TITLE, SUBTITLE AND SOURCE CAPTION
   
   labs(title = str_to_title("Out with the old. Infill with the new."))+
-  labs(subtitle = "From Dec.2000 to Apr.2024, <b>90%</b> of the 4,753 issued permits to demolish and construct <br> infill single-family homes are located in six areas of Montgomery County,MD",
+  labs(subtitle = "From Dec.2000 to Apr.2024, <b>90%</b> of demolish and construct permits issued to redevelop <br>
+       single-family homes are located in six areas of Montgomery County,MD.",
        caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS_12")+
   
   
