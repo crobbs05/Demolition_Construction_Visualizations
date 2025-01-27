@@ -216,9 +216,9 @@ annotate(geom = "text",x = 7,y = 2200,label = "59% of Demolition & Move Permits"
   #ADD TITLE, SUBTITLE AND SOURCE CAPTION
   
   labs(title = str_to_title("Out with the old. Infill with the new."))+
-  labs(subtitle = "From Dec.2000 to Apr.2024, <b>90%</b> of demolish and construct permits issued to redevelop <br>
-       single-family homes are located in six areas of Montgomery County,MD.",
-       caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS_12")+
+  labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes
+       on the same lot <br> from Dec.2000 to Apr.2024 are located in six areas of Montgomery County,MD.",
+       caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS12.BSKY.SOCIAL")+
   
   
   
@@ -237,7 +237,7 @@ annotate(geom = "text",x = 7,y = 2200,label = "59% of Demolition & Move Permits"
 
 
 ####EXPORT DATA####
-ggsave(filename = "Demolition.tiff",plot = last_plot(),width =7.5 ,height = 5,units = "in",dpi = 300)
+ggsave(filename = "Demolition.png",plot = last_plot(),width =7.5 ,height = 5,units = "in",dpi = 300)
 
 
 
