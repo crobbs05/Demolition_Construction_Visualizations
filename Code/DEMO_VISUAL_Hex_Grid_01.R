@@ -67,9 +67,16 @@ demolition_data <- drop_na(data = demolition_data)
 
 
 #CONVERT TO SIMPLE FEATURES POINT DATASET OF DEMOLITION LOCATIONS
+#CREATES NEW GEOM COLUMN IS LAT AND LONG AS A LIST
 demolition_data <- demolition_data |> 
   st_as_sf(coords =c("Longitude","Latitude"),crs = 4326) |> st_transform(crs = 4326)
   
+
+
+
+
+
+
 
 
 #VIEW DEMOLITION POINTS
@@ -242,6 +249,12 @@ demolition_data_hex <-  st_transform(demolition_data,crs = st_crs(moco_hex_grid_
 
 
 
+
+
+
+
+
+
 #CHECK CRS TO ENSURE IT IS 22418
 st_crs(demolition_data_hex)
 
@@ -294,7 +307,7 @@ less_geo_sum_join_hex <- sum_joined_hex |> as_tibble() |> select(-geometry)
 
 
 #JOIN LESS GEO SUM JOIN TIBBEL WITH HEX. END RESULT WILL HAVE A COUNT FOR EACH HEX####
-final_hex_join <- left_join(x = moco_hex_grid_sf,y =less_geo_sum_join_hex,by = "id")  
+final_hex_join <- left_join(x = moco_hex_grid_sf,y = less_geo_sum_join_hex,by = "id")  
   #mutate(total = replace_na(total,replace = 0))
 
 
@@ -331,12 +344,25 @@ potomac<- final_hex_join[final_hex_join$City == "POTOMAC",]|> drop_na()|> sf::st
 silver_spring<- final_hex_join[final_hex_join$City == "SILVER SPRING",]|> drop_na()|> sf::st_union()
 
 
+
+
+
+
+
+
+#CREATE COUNTY BOUNDARY FOR HEXMAP
 county_hex_boundary <-final_hex_join |>  st_union()
 
-test <- st_union(bethesda,c(rockville,kensington,potomac,silver_spring))
 
 
-plot(st_geometry(county_hex_boundary))
+
+
+
+
+
+
+#SEE THE OUTLINE OF THE COUNTY HEX BOUNDARY
+plot(st_geometry(bethesda))
 
 
 #CREATE COLOR PALETTE FOR BREAKS
@@ -369,8 +395,8 @@ final_hex_join|>
     ggplot()+
    
   
-  geom_sf(aes(fill =breaks,group = City),linewidth =.250,alpha = .95,color  = "#F0F0E9")+ 
-  geom_sf(data = county_hex_boundary,aes(),linewidth =.35, color = "#c4c4b6", fill =NA, alpha =.25)+
+  geom_sf(aes(fill =breaks,group = City),linewidth =.250,alpha = .95,color  = "#F0F0E9")+ # FILL DATA
+  geom_sf(data = county_hex_boundary,aes(),linewidth =.35, color = "#c4c4b6", fill = NA, alpha =.25)+ #BOUNDARY LINE 
   #geom_sf(data = bethesda,aes(),linewidth = .35, color = "#272727",fill = NA,linetype =1)+
   #geom_sf(data = bethesda,aes(),linewidth = .25, color = "#F0F0E9",fill = NA,linetype =1)+
   #geom_sf(data = rockville,aes(),linewidth = .85, color = "#FFFFFF",fill = NA)+
@@ -397,8 +423,8 @@ final_hex_join|>
     #ADJUSTING THE LEGEND SYMBOL AND FONT SIZE AND FONT FAMILY
     theme(legend.key.size = unit(10,"pt"))+
     #theme(legend.key = element_rect(color = NULL, linewidth = 0))+
-    theme(legend.text = element_text(family = "Roboto Mono",size = 6,face = "bold", color = "#272727"))+
-    theme(legend.title = element_text(family = "Roboto Mono",size = 8,face = "bold",color = "#272727"))+
+    theme(legend.text = element_text(family = "Roboto Mono",size = 18,face = "bold", color = "#272727"))+
+    theme(legend.title = element_text(family = "Roboto Mono",size = 22,face = "bold",color = "#272727"))+
     
   
     #annotate(geom = "segment",x = 77.1,xend =  77.30,y = 9.0,yend = 3.33)+
@@ -409,14 +435,11 @@ final_hex_join|>
     coord_sf(expand = TRUE,crs = 4326)
     
 
-MetBrewer::display_all()
-
-example("colors")
 
 
 
 
 
 ####EXPORT DATA####
-ggsave(filename = "Demolition_Hex_v02.png",plot = last_plot(),width =6.5 ,height = 5.5,units = "in",dpi = 300)
-4
+ggsave(filename = "Demolition_Hex_TEST.png",plot = last_plot(),width =6.5 ,height = 5.5,units = "in",dpi = 300)
+
