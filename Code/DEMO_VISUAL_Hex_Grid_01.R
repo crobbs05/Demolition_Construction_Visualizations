@@ -439,7 +439,7 @@ final_hex_join|>
   
   labs(title = str_to_title("Out with the old. Infill with the new."))+
   labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes <br>
-        from Dec.2000 to Apr.2024 are concentrated in six areas of Montgomery County,MD.",
+        from Dec.2000 to Apr.2024 are concentrated in southern Montgomery County,MD.",
        caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS12.BSKY.SOCIAL")+
   
   
