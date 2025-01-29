@@ -7,7 +7,7 @@ library(showtext)
 library(ggtext)
 library(voronoiTreemap)
 
-data("canada")
+
 
 
 
@@ -115,21 +115,14 @@ final_demo_dataset <- final_demo_dataset |>
                              "ROCKVILLE","OTHER AREAS")))
 
 
-final_demo_dataset$point_location <- c(rep(1,length(final_demo_dataset$City)))
 
-final_demo_dataset |> 
-  ggplot(mapping = aes(y =point_location,x = total_by_city, size = total_by_city))+
-  geom_point(alpha = .5)+
-  theme_void()+
-  scale_y_log10()+
-  scale_size(range = c(3,15))
 
   
  
 
 
 
-  #CREATE TREEMAP####
+#CREATE TREEMAP####
 final_demo_dataset |> 
   ggplot(mapping = aes(area = pct, fill = City))+
   geom_treemap(start = "bottomleft",color = "#F0F0E9",size = 2.25)+
@@ -138,27 +131,30 @@ final_demo_dataset |>
                         family ="Inconsolata",
                         fontface ="bold",
                         grow = FALSE,
-                    place = "center",
-                    padding.x = grid::unit(2.05,"mm"))+
+                        place = "center",
+                        padding.x = grid::unit(2.05,"mm"))+ #CONFIGURING TREEMAP PARAMETERS
   
   
   theme_void()+
   theme(legend.position = "none")+
-
   scale_fill_manual(values = met.brewer("Veronese" ,n = 7,direction = -1))+
+  
   labs(title = str_to_title("Out with the old. Infill with the new."))+
-  labs(subtitle = "From Dec.2000 to Apr.2024, <b>90%</b> of the 4,753 issued permits to demolish and construct  <br> infill single-family homes are located in six areas of Montgomery County,MD",
-       caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS_12")+
-theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", hjust = .5,
+  labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes <br> 
+       from Dec.2000 to Apr.2024 are located in six areas of Montgomery County,MD",
+       caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS12.BSKY.SOCIAL")+
+  
+  theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", hjust = .5,
                                       margin = margin(t=10,b = 0)))+
   theme(plot.subtitle = element_markdown(size = 25, family = "Inconsolata",hjust = .5,
                                          margin = margin(t = 5,r = 0,b = 5,l = 0),
                                          lineheight = .35))+
   theme(plot.caption = element_markdown(size =11.5,family = "Inconsolata",face = "bold",
-                                        hjust = .005,margin = margin(b=.35)
+                                        hjust = .005,margin = margin(t =.5,b=.35)
                                         ))+
   theme(plot.background = element_rect(fill =  "#F0F0E9",linewidth = 0,color ="#282828"))+
   theme(plot.margin =  margin(r=5,l=5,b=.5,unit = "pt"))+
+  
   coord_cartesian(expand = TRUE)
   
   
@@ -172,9 +168,3 @@ theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata
 ggsave(filename = "Demolition_Treemap_Chart.png",plot = last_plot(),width =6.5 ,height = 5.5,units = "in",dpi = 300)
 
   
-
-scales::percent()
-
-MetBrewer::display_all()
-
-MexBrewer::display_all()

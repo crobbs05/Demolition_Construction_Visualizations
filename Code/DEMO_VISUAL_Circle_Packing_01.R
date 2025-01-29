@@ -2,6 +2,10 @@ library(tidyverse)
 library(ggthemes)
 library(showtext)
 library(ggtext)
+library(packcircles)
+library(MexBrewer)
+library(MetBrewer)
+
 
 
 
@@ -104,7 +108,7 @@ demo_data_clean |> filter(Use_Code == "SINGLE FAMILY DWELLING" & Status %in% c("
 
 
 
-#CREATE NEW DATASET WITH SINGLE FAMILY HOMES ONLY BY CITY WITH COLUMN SHOWING PERCENT BY CITY LOCATION####
+#CREATE NEW DATASET WITH SINGLE FAMILY HOMES BY CITY WITH COLUMN SHOWING PERCENT BY CITY LOCATION####
 demos_by_location <- demo_data_clean |> 
   filter(Use_Code == "SINGLE FAMILY DWELLING" & Status %in% c("Finaled","Completed")) |>  
   group_by(City) |>  summarise(total_by_city = n()) |> #creates new column with total by city
@@ -145,6 +149,14 @@ top_5_cities <- demos_by_location |> filter(total_by_city >=100)
 other_cities <- demos_by_location |> filter(total_by_city<100) |>  
   summarise(City= "OTHER AREAS",across(c(total_by_city,pct),.fns = sum))
 
+
+
+
+
+
+
+
+#SHOW VALUES OF DEMOS FOR OTHRE LOCATION IN THE COUNTY
 demos_by_location |> filter(total_by_city<100) |> 
   summarise(City = "OTHER CITIES",
             total_by_city = sum(total_by_city),
@@ -154,8 +166,12 @@ demos_by_location |> filter(total_by_city<100) |>
 
 
 
+
+
+
+
 #BIND THE ROWS TOGETHER TO CREATE FINAL DATASET####
-final_demo_dataset <- (bind_rows(top_5_cities,other_cities)) |> rename("city"="City")
+final_demo_dataset <- (bind_rows(top_5_cities,other_cities)) |> rename("city"="City") #CHANGE THE NAME OF THE CITY TO LOWER CASE
 
 
 
@@ -176,45 +192,69 @@ final_demo_dataset <- final_demo_dataset |>
 
 
 
+packing <- circleProgressiveLayout(x = final_demo_dataset$pct,sizetype = "area")
 
-#CREAT BAR GRAPHIC#####
-final_demo_dataset |>
-  ggplot(mapping = aes(x =fct_rev(city),y  = total_by_city))+
-  geom_bar(stat = "identity",width = .550,fill = "#0d3b66",alpha =1,position=position_dodge(-7))+
-  geom_bar(stat = "identity",width = .400,fill = "#557c93",alpha = .25,position=position_dodge(-7))+
-  geom_hline(yintercept = 0, color = "#282828")+
-  scale_y_continuous(breaks = seq(0,2500,500),labels = scales::label_comma(),position = "right")+
-  theme_void()+
-  theme(axis.text.y = element_text(size = 30,family = "Inconsolata", face = "bold",
-                                   margin = margin(l =5,r =-10,unit = "pt")))+
+
+
+
+
+
+
+
+
+packing$radius <- packing$radius *.93
+
+
+packing$radius_v02 <- packing$radius *.955
+
+
+
+
+
+
+label_data <- cbind(final_demo_dataset,packing)
+
+
+
+
+
+
+
+
+
+data_circles <- circleLayoutVertices(packing,npoints = 150)
+
+data_circles_v02 <- circleLayoutVertices(packing[,c(1,2,4)],npoints = 150)
+
+
+
+
+
+rm(Veronese)
+
+
+
+ggplot()+
+  geom_polygon(data = data_circles,aes(x = x,y = y,group = id, fill=as.factor(id)), 
+               alpha =.95,
+               show.legend = FALSE)+
+  geom_polygon(data = data_circles_v02,aes(x = x,y = y,group = id), 
+               alpha =.35,linewidth = .25,color ="#F0F0E9",
+               show.legend = FALSE)+
   
-  theme(axis.text.x = element_text(size = 27,family = "Inconsolata",margin = margin(b =2.5,unit = "pt")))+
-  
-  theme(panel.grid.major.x = element_line(color = "#E8E7E2"))+
-  theme(panel.grid.major.y = element_line(color = "#E8E7E2"))+
-  
-  theme(plot.margin = margin(l =5,t = 20,b =10,r = 5,unit = "pt"))+
-  
-  theme(plot.background = element_rect(fill = "#F0F0E9",linewidth = 0))+
-  
-  
-  
-  #ADD TEXT TO GRAPHIC####
-annotate(geom = "text",x = 7,y = 2200,label = "59% of Demolition & Move Permits",color = "#F0F0E9", 
-         family = "Inconsolata",fontface = "bold", size = 12 )+
-  
-  annotate(geom = "text",x = c(6,5,4,3,2,1),y = c(444-75,297-75,269-75,249-75,229-75,452-75),
-           label = c("9%","6%","6%","5%","5%","10%"),color = "#F0F0E9", 
-           family = "Inconsolata",fontface = "bold", size = 12 )+
-  
-  annotate(geom = "text", x = 7.75, y = 2750, label = "# of Permits",family = "Inconsolata",size = 8,
-           
-           lineheight = .5)+ 
-  
+  geom_text(data = label_data,aes(x = x,y = y,label = city), 
+            color = "#F0F0E9",size = 8, family = "Inconsolata",fontface ="bold")+
+  geom_text(data = label_data,aes(x = x,y = y,label = paste0(round(pct),sep ="%")), 
+            color = "#F0F0E9",size = 8, family = "Inconsolata",
+            nudge_y = -.25)+
+  theme_fivethirtyeight()+
+  theme(panel.grid.major =  element_blank())+
+  theme(axis.text = element_blank())+
+  scale_color_manual(values = met.brewer("Veronese" ,n = 7,direction = -1,type = "discrete"),.5)+
+  scale_fill_manual(values = met.brewer("Veronese" ,n = 7,direction = -1,type = "discrete"))+
   
   
   #ADD TITLE, SUBTITLE AND SOURCE CAPTION
-  
   labs(title = str_to_title("Out with the old. Infill with the new."))+
   labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes <br> 
        from Dec.2000 to Apr.2024 are located in six areas of Montgomery County,MD.",
@@ -222,23 +262,24 @@ annotate(geom = "text",x = 7,y = 2200,label = "59% of Demolition & Move Permits"
   
   
   
-  
-  theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", 
+  #ADJUSTING TITLE, SUBTILE AND CAPTION
+  theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", hjust = .5,
                                       margin = margin(b = 0)))+
-  theme(plot.subtitle = element_markdown(size = 32, family = "Inconsolata",
+  theme(plot.subtitle = element_markdown(size = 32, family = "Inconsolata",hjust = .5,
                                          margin = margin(t = 5,r = 0,b = 7,l = 0),lineheight = .45))+
-  theme(plot.caption = element_markdown(size =20,family = "Inconsolata",hjust = 0,margin = margin(t =5,b =-2.5)))+
+  theme(plot.caption = element_markdown(size =15,family = "Inconsolata",hjust = 0,margin = margin(t =5,b =-9)))+
   
   
+  coord_equal(expand = TRUE)
   
-  coord_flip(clip = "off",expand = TRUE,xlim = c(1,7))
 
 
 
 
 
-####EXPORT DATA####
-ggsave(filename = "Demolition.png",plot = last_plot(),width =7.5 ,height = 5,units = "in",dpi = 300)
+
+###EXPORT DATA####
+ggsave(filename = "Demolition_Circle_Packing.png",plot = last_plot(),width =7.5 ,height = 5,units = "in",dpi = 300)
 
 
 
