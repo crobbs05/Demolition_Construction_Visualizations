@@ -233,12 +233,12 @@ data_circles_v02 <- circleLayoutVertices(packing[,c(1,2,4)],npoints = 150)
 rm(Veronese)
 
 
-
+#CREATE CIRCLE PACKING PLOT
 ggplot()+
   geom_polygon(data = data_circles,aes(x = x,y = y,group = id, fill=as.factor(id)), 
                alpha =.95,
                show.legend = FALSE)+
-  geom_polygon(data = data_circles_v02,aes(x = x,y = y,group = id), 
+  geom_polygon(data = data_circles_v02,aes(x = x,y = y,group = id,  fill=as.factor(id)), 
                alpha =.35,linewidth = .25,color ="#F0F0E9",
                show.legend = FALSE)+
   
@@ -252,7 +252,8 @@ ggplot()+
   theme(axis.text = element_blank())+
   scale_color_manual(values = met.brewer("Veronese" ,n = 7,direction = -1,type = "discrete"),.5)+
   scale_fill_manual(values = met.brewer("Veronese" ,n = 7,direction = -1,type = "discrete"))+
-  
+  theme(plot.background = element_rect(fill = "#F0F0E9", linewidth = 0, color = "#272727"))+
+  theme(panel.background = element_rect(fill = "#F0F0E9",linewidth = 0))+
   
   #ADD TITLE, SUBTITLE AND SOURCE CAPTION
   labs(title = str_to_title("Out with the old. Infill with the new."))+
@@ -268,6 +269,7 @@ ggplot()+
   theme(plot.subtitle = element_markdown(size = 32, family = "Inconsolata",hjust = .5,
                                          margin = margin(t = 5,r = 0,b = 7,l = 0),lineheight = .45))+
   theme(plot.caption = element_markdown(size =15,family = "Inconsolata",hjust = 0,margin = margin(t =5,b =-9)))+
+  
   
   
   coord_equal(expand = TRUE)
