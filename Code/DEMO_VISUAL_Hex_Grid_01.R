@@ -321,13 +321,31 @@ final_hex_join$breaks <-  classInt::classify_intervals(var = final_hex_join$tota
 unique(final_hex_join$breaks)
 
 
-plot(st_geometry(bethesda))
 
 
 
 
 
-county_hex_boundary <-final_hex_join |>  st_union()
+#CREATE COUNTY BOUNDARY FOR HEXMAP
+#converts the hex polygons to a single polyline with hex boundary
+county_hex_boundary <- final_hex_join |>  st_union() 
+
+
+
+
+
+
+
+
+
+#SEE THE OUTLINE OF THE COUNTY HEX BOUNDARY
+plot(st_geometry(county_hex_boundary))
+
+
+
+
+
+
 
 
 
@@ -350,19 +368,8 @@ silver_spring<- final_hex_join[final_hex_join$City == "SILVER SPRING",]|> drop_n
 
 
 
-#CREATE COUNTY BOUNDARY FOR HEXMAP
-county_hex_boundary <-final_hex_join |>  st_union()
 
 
-
-
-
-
-
-
-
-#SEE THE OUTLINE OF THE COUNTY HEX BOUNDARY
-plot(st_geometry(bethesda))
 
 
 #CREATE COLOR PALETTE FOR BREAKS
@@ -390,6 +397,13 @@ font_add_google(name = "Inconsolata",family = "Inconsolata")
 
 
 
+
+
+
+
+
+
+
 #VIEW FINAL HEX COUNTS
 final_hex_join|> 
     ggplot()+
@@ -411,14 +425,38 @@ final_hex_join|>
     
     #ADJUSTING THE LEGEND
     scale_fill_manual(values = met.brewer("Hokusai2" ,n = 5,direction = 1),
-    name ="Number of Issued Permits", 
-    labels = c("1 - 8","9 - 29","30 - 66","67 - 117","> 117","No Issued Permits"),na.value = "grey50")+
+    name ="Number of Permits Issued", 
+    labels = c("1 - 8","9 - 29","30 - 66","67 - 117","> 117","No Permits Issued"),na.value = "grey50")+
     
     #MAKING THE LENGEND ONE ROW AND MOVING IT TO THE TOP
     guides(fill = guide_legend(nrow = 1,position = "top",color = NA, 
                                title.position ="top",title.hjust=0.5,
                                theme = theme(legend.key = element_rect(linewidth = 0))))+
     
+  
+  
+  #ADD TITLE, SUBTITLE AND SOURCE CAPTION
+  
+  labs(title = str_to_title("Out with the old. Infill with the new."))+
+  labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes <br>
+        from Dec.2000 to Apr.2024 are concentrated in six areas of Montgomery County,MD.",
+       caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS12.BSKY.SOCIAL")+
+  
+  
+  
+  
+  theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", hjust = .5,
+                                      margin = margin(b = 0)))+
+  theme(plot.subtitle = element_markdown(size = 32, family = "Inconsolata", hjust =.5,
+                                         margin = margin(t = 5,r = 0,b = 10,l = 0),lineheight = .35))+
+  theme(plot.caption = element_markdown(size =15,family = "Inconsolata",hjust = 0,margin = margin(t =5,b = 5,l=-50.5)))+
+  
+  
+  
+  
+  
+  
+  
     
     #ADJUSTING THE LEGEND SYMBOL AND FONT SIZE AND FONT FAMILY
     theme(legend.key.size = unit(10,"pt"))+
@@ -431,7 +469,7 @@ final_hex_join|>
 
     #ADJUSTING THE PLOT BACKGROUND COLOR AND ADDING MARKING SPACE AT THE TOP
     theme(plot.background = element_rect(fill = "#F0F0E9", linewidth = 0, color = "#272727"))+
-    theme(plot.margin = margin(t = 50))+
+    theme(plot.margin = margin(t = 10))+
     coord_sf(expand = TRUE,crs = 4326)
     
 
@@ -441,5 +479,5 @@ final_hex_join|>
 
 
 ####EXPORT DATA####
-ggsave(filename = "Demolition_Hex_TEST.png",plot = last_plot(),width =6.5 ,height = 5.5,units = "in",dpi = 300)
+ggsave(filename = "Demolition_Hex.png",plot = last_plot(),width =6.5 ,height = 5.5,units = "in",dpi = 300)
 

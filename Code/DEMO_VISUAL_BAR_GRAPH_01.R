@@ -216,14 +216,15 @@ annotate(geom = "text",x = 7,y = 2200,label = "59% of Demolition & Move Permits"
   #ADD TITLE, SUBTITLE AND SOURCE CAPTION
   
   labs(title = str_to_title("Out with the old. Infill with the new."))+
-  labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes
-       on the same lot <br> from Dec.2000 to Apr.2024 are located in six areas of Montgomery County,MD.",
+  labs(subtitle = "<b>90%</b> of demolish and move permits issued to redevelop single-family homes <br> 
+       from Dec.2000 to Apr.2024 are located in six areas of Montgomery County,MD.",
        caption = "Source:Montgomery County, MD Open Data Portal | Visualization by @ETTS12.BSKY.SOCIAL")+
   
   
   
   
-  theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", margin = margin(b = 0)))+
+  theme(plot.title = element_markdown(size = 45,face ="bold",family = "Inconsolata", 
+                                      margin = margin(b = 0)))+
   theme(plot.subtitle = element_markdown(size = 32, family = "Inconsolata",
                                          margin = margin(t = 5,r = 0,b = 7,l = 0),lineheight = .45))+
   theme(plot.caption = element_markdown(size =20,family = "Inconsolata",hjust = 0,margin = margin(t =5,b =-2.5)))+
